@@ -1,0 +1,16 @@
+{
+  "name": "lessie",
+  "license": "MIT",
+  "tags": [
+    "css",
+    "less"
+  ],
+  "classPath": "src",
+  "contributors": [
+    "back2dos"
+  ],
+  "releasenote": "initial release",
+  "version": "0.0.0",
+  "url": "https://github.com/back2dos/lessie/",
+  "dependencies": {}
+}
