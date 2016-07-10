@@ -4,7 +4,8 @@ import haxe.macro.Compiler;
 import haxe.macro.Expr;
 import haxe.macro.Context;
 using haxe.io.Path;
-import sys.io.File;
+using sys.io.File;
+using StringTools;
 
 class Less { 
   
@@ -23,6 +24,39 @@ class Less {
       case 0:
         
       case v:
+        for (line in '$output.errorlog'.getContent().split('\n')) {
+          
+          if (line.split(' ')[0].endsWith('Error:')) {
+            switch line.lastIndexOf(' in ') {
+              case -1: //something's weird here
+              case v:
+                var message = line.substr(0, v);
+                var pos = line.substr(v + 4);
+                
+                switch pos.lastIndexOf(' on line ') {
+                  case -1: //something's weird here
+                  case start: 
+                    var lineNumber = Std.parseInt(pos.substr(start + 9)) - 1,
+                        file = pos.substr(0, start).trim();
+                        
+                    var min = 0,
+                        lines = file.getContent().split('\n');
+                        
+                    for (i in 0...lineNumber)
+                      min += lines[i].length + 1;
+                      
+                    var max = min + lines[lineNumber].length;
+                    //try {
+                    Context.error(message, Context.makePosition( { file: file, min: min, max: max } ));
+                    //}
+                    //trace(pos);
+                    //trace(line);
+                }
+            }
+            
+            //trace(line);
+          }
+        }
         Sys.exit(v);
     }
   }
@@ -42,7 +76,7 @@ class Less {
           case -1: break;
           case v: 
             
-            pos += '@import'.length;
+            pos = v + '@import'.length;
             
             while (StringTools.isSpace(s, pos)) pos++;
             
