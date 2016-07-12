@@ -10,9 +10,6 @@ import Fake;
 class RunTests {
 
   static function main() {
-    trace(FileSystem.readDirectory('.'));
-    trace(FileSystem.readDirectory('./bin/'));
-    trace(FileSystem.readDirectory('./bin/node/'));
     var dce = Compiler.getDefine('dce') == 'full';
 
     switch File.getContent(lessie.Lessie.getOutput()).indexOf('.skip') {
