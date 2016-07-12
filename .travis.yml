@@ -16,6 +16,7 @@ matrix:
     - haxe: development
     
 install:
+  - npm install lessc -g
   - haxelib install travix
   - haxelib run travix install
 

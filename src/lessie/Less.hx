@@ -33,7 +33,9 @@ class Less {
         }
       case v:
         for (line in '$output.errorlog'.getContent().split('\n')) {
-          
+          if (line == 'ENOENT') {
+            throw 'You need to have lessc installed and available';
+          }
           if (line.split(' ')[0].endsWith('Error:')) {
             switch line.lastIndexOf(' in ') {
               case -1: //something's weird here
@@ -54,11 +56,8 @@ class Less {
                       min += lines[i].length + 1;
                       
                     var max = min + lines[lineNumber].length;
-                    //try {
+                    
                     Context.error(message, Context.makePosition( { file: file, min: min, max: max } ));
-                    //}
-                    //trace(pos);
-                    //trace(line);
                 }
             }
             
