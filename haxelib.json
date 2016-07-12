@@ -9,8 +9,8 @@
 	"contributors": [
 		"back2dos"
 	],
-	"releasenote": "Initial release.",
-	"version": "1.0.0",
+	"releasenote": "Initial haxelib release.",
+	"version": "1.0.1",
 	"url": "https://github.com/back2dos/lessie/",
 	"dependencies": {}
 }
