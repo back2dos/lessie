@@ -6,20 +6,39 @@ import haxe.macro.Context;
 using haxe.io.Path;
 using sys.io.File;
 using StringTools;
+using sys.FileSystem;
 
 class Less { 
   
   static public function build(array:Array<String>) {
+    
     //TODO: this invocation through a file is utter crap. Check again for 3.3
     var file = Path.directory(Context.getPosInfos((macro null).pos).file) + '/build.js';
     
-    var output = Compiler.getOutput().withoutExtension().withExtension('css'),
-        input = [for (file in array) '@import \'$file\';'].join('\n'),
-        cmd = switch Sys.systemName() {
-          case 'Windows': 'lessc.cmd';
-          default: 'lessc';
-        }
-        
+    var outDir = Compiler.getOutput();
+    
+    if (!outDir.isDirectory())
+      outDir = outDir.directory();
+    
+    var output = 
+          switch Context.definedValue('lessieOutput') {
+            case null: '$outDir/styles.css';
+            case v: 
+              var file = switch v.charAt(0) {
+                case '.', '/': v;
+                default: '$outDir/$v';
+              }
+              
+              if (file.extension() == "") file += '.css';
+              file;
+          },
+        input = [for (file in array) '@import \'$file\';'].join(' '),
+        cmd = 
+          switch Sys.systemName() {
+            case 'Windows': 'lessc.cmd';
+            default: 'lessc';
+          }       
+    
     switch Sys.command('node', [file, cmd, output, input]) {
       case 0:
         

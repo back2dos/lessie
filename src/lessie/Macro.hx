@@ -9,12 +9,13 @@ import sys.io.File;
 
 using StringTools;
 
-private typedef Info = {
+typedef Info = {
   mtime:Int,
   dependencies:Array<FileRef>,
 }
 
-private class Builder {
+
+class Builder {
   
   var newInfos = new Map<String, Info>();
   var oldInfos:Map<String, Info>;
@@ -28,6 +29,9 @@ private class Builder {
   }
   
   
+  function doBuild()
+    Less.build([for (f in found) f.name]);
+    
   public function buildLess(types:Array<Type>) {
     
     for (t in types)
@@ -38,12 +42,15 @@ private class Builder {
         default:
       }
       
+    #if forceLessie
+      doBuild();
+    #else
     for (f in found)
       getInfo(f);
       
-    if (mustBuild) {
-      Less.build([for (f in found) f.name]);
-    }
+    if (mustBuild) 
+      doBuild();
+    #end
 
     return newInfos;
   }
