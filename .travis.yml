@@ -21,3 +21,4 @@ install:
 
 script:
   - haxelib run travix node
+  - haxelib run travix node -dce=full

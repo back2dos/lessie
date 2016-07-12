@@ -1,58 +1,52 @@
 package lessie;
 
-import haxe.io.Path;
 import haxe.macro.Context;
+import sys.FileSystem;
 import haxe.macro.Type;
 import haxe.macro.Expr;
-import sys.FileSystem;
 import sys.io.File;
-
-using StringTools;
-
-typedef Info = {
-  mtime:Int,
-  dependencies:Array<FileRef>,
-}
-
+using haxe.io.Path;
 
 class Builder {
   
+  static var oldInfos = new Map<String, Info>();
   var newInfos = new Map<String, Info>();
-  var oldInfos:Map<String, Info>;
   var mtimes = new Map<String, Int>();
   var found = new Array<FileRef>();
   
   var mustBuild = false;
   
-  public function new(oldInfos) { 
-    this.oldInfos = oldInfos;
-  }
+  public function new() { }
   
   
   function doBuild()
-    Less.build([for (f in found) f.name]);
+    Less.build([for (f in found) f.name], Lessie.getOutput());
     
   public function buildLess(types:Array<Type>) {
-    
-    for (t in types)
-      switch t {
-        case TInst(c, _): getLess(c);
-        case TEnum(e, _): getLess(e);
-        case TAbstract(a, _): getLess(a);
-        default:
-      }
+        
+    Context.onAfterGenerate(function () {
+      for (t in types)
+        switch t {
+          case TInst(c, _): getLess(c);
+          case TEnum(e, _): getLess(e);
+          case TAbstract(a, _): getLess(a);
+          default:
+        }
       
-    #if forceLessie
-      doBuild();
-    #else
-    for (f in found)
-      getInfo(f);
+      #if forceLessie
+        doBuild();
+      #else
+      for (f in found)
+        getInfo(f);
       
-    if (mustBuild) 
-      doBuild();
-    #end
+      if (mustBuild) 
+        doBuild();
+      #end
 
-    return newInfos;
+      oldInfos = newInfos;
+      
+    });
+    
   }
   
   function mtime(file:FileRef) {
@@ -70,21 +64,22 @@ class Builder {
   function getLess<T:BaseType>(r:Ref<T>) {
     var t = r.get();
     
-    for (m in t.meta.extract(':less')) {
-      for (p in m.params)
-        switch p.expr {
-          case EConst(CString(s)):
-            
-            found.push({ 
-              name: Path.join([Path.directory(Context.getPosInfos(t.pos).file), s]), 
-              from: p.pos
-            });
-            
-          default:
-            
-            Context.error('Parameter must be string constant', p.pos);
-        }
-    }
+    if (t.meta.has(':used'))
+      for (m in t.meta.extract(':less')) 
+        for (p in m.params)
+          switch p.expr {
+            case EConst(CString(s)):
+              
+              found.push({ 
+                name: Path.join([Path.directory(Context.getPosInfos(t.pos).file), s]), 
+                from: p.pos
+              });
+              
+            default:
+              
+              Context.error('Parameter must be string constant', p.pos);
+          }
+      
     
     return null;
   }
@@ -114,16 +109,6 @@ class Builder {
     }
     
     return newInfos[file.name];
-  }
-  
-}
-
-class Macro { 
-  
-  static var infos = new Map();
-  static function trick() {
-    
-    Context.onGenerate(function (types) infos = new Builder(infos).buildLess(types));
   }
   
 }

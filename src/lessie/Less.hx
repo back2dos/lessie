@@ -10,29 +10,12 @@ using sys.FileSystem;
 
 class Less { 
   
-  static public function build(array:Array<String>) {
+  static public function build(array:Array<String>, output) {
     
     //TODO: this invocation through a file is utter crap. Check again for 3.3
     var file = Path.directory(Context.getPosInfos((macro null).pos).file) + '/build.js';
     
-    var outDir = Compiler.getOutput();
-    
-    if (!outDir.isDirectory())
-      outDir = outDir.directory();
-    
-    var output = 
-          switch Context.definedValue('lessieOutput') {
-            case null: '$outDir/styles.css';
-            case v: 
-              var file = switch v.charAt(0) {
-                case '.', '/': v;
-                default: '$outDir/$v';
-              }
-              
-              if (file.extension() == "") file += '.css';
-              file;
-          },
-        input = [for (file in array) '@import \'$file\';'].join(' '),
+    var input = [for (file in array) '@import \'$file\';'].join(' '),
         cmd = 
           switch Sys.systemName() {
             case 'Windows': 'lessc.cmd';
@@ -41,7 +24,13 @@ class Less {
     
     switch Sys.command('node', [file, cmd, output, input]) {
       case 0:
-        
+        @:privateAccess {
+          
+          for (p in Lessie.postProcessors)
+            p(output);
+            
+          Lessie.postProcessors = [];
+        }
       case v:
         for (line in '$output.errorlog'.getContent().split('\n')) {
           
