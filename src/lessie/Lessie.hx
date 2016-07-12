@@ -19,7 +19,7 @@ class Lessie {
   static public function getOutputPath() {
     var outDir = Compiler.getOutput();
     
-    if (!outDir.isDirectory())
+    if (outDir.extension() != '')
       outDir = outDir.directory();
     
     return 
