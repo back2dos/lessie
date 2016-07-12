@@ -1,6 +1,7 @@
 package ;
 
 import haxe.macro.Compiler;
+import sys.FileSystem;
 import sys.io.File;
 import travix.Logger.*;
 import Fake;
@@ -9,7 +10,9 @@ import Fake;
 class RunTests {
 
   static function main() {
-    
+    trace(FileSystem.readDirectory('.'));
+    trace(FileSystem.readDirectory('./bin/'));
+    trace(FileSystem.readDirectory('./bin/node/'));
     var dce = Compiler.getDefine('dce') == 'full';
 
     switch File.getContent(lessie.Lessie.getOutput()).indexOf('.skip') {

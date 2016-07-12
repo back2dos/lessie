@@ -3,13 +3,13 @@ dist: trusty
 
 language: haxe
 
-os:
-  - linux
-  - osx
+#os:
+#  - linux
+#  - osx
   
 haxe:
   - "3.2.1"
-  - development
+#  - development
   
 matrix:
   allow_failures:
@@ -21,4 +21,4 @@ install:
 
 script:
   - haxelib run travix node
-  - haxelib run travix node -dce=full
+  - haxelib run travix node -dce full
