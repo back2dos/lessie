@@ -9,8 +9,8 @@
 	"contributors": [
 		"back2dos"
 	],
-	"releasenote": "Better error message if lessc is not available.",
-	"version": "1.0.2",
+	"releasenote": "Disable strict math.",
+	"version": "1.0.3",
 	"url": "https://github.com/back2dos/lessie/",
 	"dependencies": {}
 }
