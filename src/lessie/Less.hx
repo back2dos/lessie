@@ -60,8 +60,6 @@ class Less {
                     Context.error(message, Context.makePosition( { file: file, min: min, max: max } ));
                 }
             }
-            
-            //trace(line);
           }
         }
         Sys.exit(v);

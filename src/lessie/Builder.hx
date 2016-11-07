@@ -20,10 +20,10 @@ class Builder {
   
   
   function doBuild()
-    Less.build([for (f in found) f.name], Lessie.getOutput());
+    Less.build([for (f in found) f.name], Lessie.getOutputPath());
     
   public function buildLess(types:Array<Type>) {
-        
+    
     Context.onAfterGenerate(function () {
       for (t in types)
         switch t {
