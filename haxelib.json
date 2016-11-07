@@ -9,8 +9,8 @@
 	"contributors": [
 		"back2dos"
 	],
-	"releasenote": "Disable strict math.",
-	"version": "1.0.3",
+	"releasenote": "Fix caching issues.",
+	"version": "1.1.0",
 	"url": "https://github.com/back2dos/lessie/",
 	"dependencies": {}
 }
