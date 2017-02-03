@@ -13,7 +13,8 @@ class Lessie {
   static var postProcessors = [];
   
   static function use() {
-    Context.onGenerate(function (types) new Builder().buildLess(types));  
+    if (!Context.defined('display'))
+      Context.onGenerate(function (types) new Builder().buildLess(types));  
   }
   
   static public function getOutputPath() {
