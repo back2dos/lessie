@@ -22,6 +22,11 @@ class Less {
             default: 'lessc';
           }       
     
+    switch '${Sys.getCwd()}/node_modules/.bin/$cmd' {
+      case found if (found.exists()): cmd = found;
+      default:
+    }
+    
     switch Sys.command('node', [file, cmd, output, input]) {
       case 0:
         @:privateAccess {
