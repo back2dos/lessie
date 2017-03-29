@@ -18,13 +18,16 @@ class Builder {
   
   public function new() { }
   
-  
   function doBuild()
     Less.build([for (f in found) f.name], Lessie.getOutputPath());
     
   public function buildLess(types:Array<Type>) {
     
     Context.onAfterGenerate(function () {
+      // mustBuild = false;
+      // newInfos = new Map<String, Info>();
+      // mtimes = new Map<String, Int>();
+
       for (t in types)
         switch t {
           case TInst(c, _): getLess(c);
@@ -32,7 +35,6 @@ class Builder {
           case TAbstract(a, _): getLess(a);
           default:
         }
-      
       #if forceLessie
         doBuild();
       #else
@@ -85,9 +87,7 @@ class Builder {
   }
   
   function readInfo(file:FileRef):Info {
-    
     mustBuild = true;
-    
     return {
       mtime: mtime(file),
       dependencies: Less.parse(File.getContent(file.name), file.name).dependencies,
@@ -96,12 +96,14 @@ class Builder {
   
   function getInfo(file:FileRef) {
     if (!newInfos.exists(file.name)) {
+      
       newInfos[file.name] = switch oldInfos[file.name] {
         case null:
           readInfo(file);
         case stale if (stale.mtime < mtime(file)):
           readInfo(file);
-        case v: v;
+        case v: 
+          v;
       }
       
       for (dep in newInfos[file.name].dependencies)

@@ -80,10 +80,11 @@ class Less {
       return Context.makePosition( { min: start, max: end, file: file } );
     
     function flush(to:Int) {
-      
+      if (to == -1) throw 'nooo';
       while (pos < to) 
         switch s.indexOf('@import', pos) {
-          case -1: break;
+          case -1: 
+            break;
           case v: 
             
             pos = v + '@import'.length;
@@ -115,13 +116,13 @@ class Less {
         case [-1, -1]:
           flush(s.length);
           pos = s.length;
-        case [line, block] if (line < block):
+        case [line, block] if ((line < block || block == -1) && line >= 0):
           flush(line);
           pos = switch s.indexOf('\n', line) {
             case -1: s.length;
             case v: v + 1;
           }
-        case [_, block]:
+        case [line, block]:
           flush(block);
           
           pos = switch s.indexOf('*/', block+2) {
@@ -130,7 +131,7 @@ class Less {
           }
 
       }
-    
+      
     return { dependencies: deps };
   }
   

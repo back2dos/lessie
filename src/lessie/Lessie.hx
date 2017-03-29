@@ -11,7 +11,6 @@ class Lessie {
 
   #if macro
   static var postProcessors = [];
-  
   static function use() {
     if (!Context.defined('display'))
       Context.onGenerate(function (types) new Builder().buildLess(types));  
