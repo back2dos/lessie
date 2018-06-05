@@ -1,0 +1,5 @@
+tests.hxml
+-neko bin/neko.n
+#--no-output
+-lib lessie
+-lib travix

@@ -1,5 +1,6 @@
 package lessie;
 
+#if macro
 import haxe.macro.Compiler;
 import haxe.macro.Expr;
 import haxe.macro.Context;
@@ -71,68 +72,8 @@ class Less {
     }
   }
   
-  static public function parse(s:String, file:String):{ dependencies:Array<FileRef> } {
-  
-    var pos = 0,
-        deps = [];
-        
-    function makePos(start, end)
-      return Context.makePosition( { min: start, max: end, file: file } );
-    
-    function flush(to:Int) {
-      if (to == -1) throw 'nooo';
-      while (pos < to) 
-        switch s.indexOf('@import', pos) {
-          case -1: 
-            break;
-          case v: 
-            
-            pos = v + '@import'.length;
-            
-            while (StringTools.isSpace(s, pos)) pos++;
-            
-            var start = pos;
-            if (s.charAt(start) != '"')
-              Context.error('expected import argument starting with double quotes', makePos(start, start+1));
-              
-            var end = s.indexOf('"', start+1);
-            
-            if (end == -1) {
-              Context.error('unclosed file name', makePos(v, start));
-            }
-            
-            deps.push({
-              name: Path.join([Path.directory(file), s.substring(start + 1, end)]),
-              from: makePos(start, end+1)
-            });
-            
-            pos = end + 1;
-        }
-        
-    }
-    
-    while (pos < s.length) 
-      switch [s.indexOf('//', pos), s.indexOf('/*', pos)] {
-        case [-1, -1]:
-          flush(s.length);
-          pos = s.length;
-        case [line, block] if ((line < block || block == -1) && line >= 0):
-          flush(line);
-          pos = switch s.indexOf('\n', line) {
-            case -1: s.length;
-            case v: v + 1;
-          }
-        case [line, block]:
-          flush(block);
-          
-          pos = switch s.indexOf('*/', block+2) {
-            case -1: s.length;
-            case v: v + 2;
-          }
-
-      }
-      
-    return { dependencies: deps };
-  }
+  static public function parse(s:String, file:String):{ dependencies:Array<FileRef> } 
+    return { dependencies: new Parser(file, s).parseFile() }
   
 }
+#end

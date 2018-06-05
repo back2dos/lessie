@@ -11,7 +11,6 @@ class RunTests {
 
   static function main() {
     var dce = Compiler.getDefine('dce') == 'full';
-
     switch File.getContent(lessie.Lessie.getOutput()).indexOf('.skip') {
       case -1 if (dce):
       case -1 if (!dce):

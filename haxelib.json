@@ -12,5 +12,7 @@
 	"releasenote": "Fix dependency parsing, prefer local lessc if found, skip work in display mode.",
 	"version": "1.1.1",
 	"url": "https://github.com/back2dos/lessie/",
-	"dependencies": {}
+	"dependencies": {
+		"tink_parse": ""
+	}
 }

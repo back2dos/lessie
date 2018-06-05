@@ -1,0 +1,4 @@
+-cp src
+-D lessie
+-lib tink_parse
+extraParams.hxml
