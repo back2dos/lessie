@@ -1,47 +1,58 @@
 package lessie;
 
 #if macro
-import haxe.macro.Compiler;
-import haxe.macro.Expr;
 import haxe.macro.Context;
-using haxe.io.Path;
 using sys.io.File;
-using StringTools;
 using sys.FileSystem;
+using StringTools;
 
 class Less { 
-  
+  static var isWindows = Sys.systemName() == 'Windows';
+
   static public function build(array:Array<String>, output) {
     
     //TODO: this invocation through a file is utter crap. Check again for 3.3
-    var file = Path.directory(Context.getPosInfos((macro null).pos).file) + '/build.js';
-    
-    var input = [for (file in array) '@import \'$file\';'].join(' '),
-        cmd = 
-          switch Sys.systemName() {
-            case 'Windows': 'lessc.cmd';
-            default: 'lessc';
-          }       
+    // var file = Path.directory(Context.getPosInfos((macro null).pos).file) + '/build.js';
+    function run(cmd:String, args:Array<String>, ?stdin:String) {
+      
+      var p = new sys.io.Process(cmd, args);
+      
+      if (stdin != null)
+        p.stdin.writeString(stdin);
+      
+      p.stdin.close();
+      
+      var stderr = p.stderr.readAll().toString(),
+          stdout = p.stdout.readAll().toString();
+
+      return {
+        code: p.exitCode(true),
+        stderr: stderr,
+        stdout: stdout,
+        both: stderr + stdout,
+      }
+    }
+
+
+
+    var cmd = if (isWindows) 'lessc.cmd' else 'lessc';
     
     switch '${Sys.getCwd()}/node_modules/.bin/$cmd' {
       case found if (found.exists()): cmd = found;
       default:
-    }
-    
-    switch Sys.command('node', [file, cmd, output, input]) {
-      case 0:
-        @:privateAccess {
-          
-          for (p in Lessie.postProcessors)
-            p(output);
-            
-          Lessie.postProcessors = [];
+        if (isWindows) switch run('where', [cmd]) {
+          case { code: 0, stdout: v }: 
+            cmd = v.trim();
+          case v: 
+            Sys.print(v.both);
+            Sys.exit(v.code);
         }
+    }
+
+    switch run(cmd, ['-', output, '--no-color'], [for (file in array) '@import \'$file\';'].join(' ')) {
+      case { code: 0 }:
       case v:
-        for (line in '$output.errorlog'.getContent().split('\n')) {
-          if (line == 'ENOENT') {
-            throw 'You need to have lessc installed and available';
-          }
+        for (line in v.stderr.split('\n')) 
           if (line.split(' ')[0].endsWith('Error:')) {
             switch line.lastIndexOf(' in ') {
               case -1: //something's weird here
@@ -66,9 +77,7 @@ class Less {
                     Context.error(message, Context.makePosition( { file: file, min: min, max: max } ));
                 }
             }
-          }
-        }
-        Sys.exit(v);
+          }       
     }
   }
   
