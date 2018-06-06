@@ -11,8 +11,6 @@ class Less {
 
   static public function build(array:Array<String>, output) {
     
-    //TODO: this invocation through a file is utter crap. Check again for 3.3
-    // var file = Path.directory(Context.getPosInfos((macro null).pos).file) + '/build.js';
     function run(cmd:String, args:Array<String>, ?stdin:String) {
       
       var p = new sys.io.Process(cmd, args);
@@ -32,8 +30,6 @@ class Less {
         both: stderr + stdout,
       }
     }
-
-
 
     var cmd = if (isWindows) 'lessc.cmd' else 'lessc';
     
