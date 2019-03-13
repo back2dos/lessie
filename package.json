@@ -1,0 +1,11 @@
+{
+	"name": "lessie",
+	"dependencies": {
+		"less": "^3.9.0",
+		"lix": "^15.3.5"
+	},
+	"scripts": {
+		"postinstall": "lix download",
+		"test": "lix run travix node"
+	}
+}

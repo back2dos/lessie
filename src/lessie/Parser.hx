@@ -2,30 +2,21 @@ package lessie;
 
 #if macro
 import tink.parse.Char.*;
-import tink.core.Error;
+import tink.parse.*;
 import haxe.io.Path;
 using StringTools;
 using tink.CoreApi;
+import haxe.macro.Expr;
 
-class Parser extends tink.parse.ParserBase<Pos, Error> {
+class Parser extends ParserBase<Position, Error> {
   var fileName:String;
   
   public function new(fileName, source) {
-    super(source);
-    this.fileName = fileName;
+    super(source, Reporter.expr(this.fileName = fileName));
   }
 
   override function doSkipIgnored() 
     doReadWhile(WHITE);
-
-  override function makeError(message:String, pos:Pos):Error 
-    return new Error(message, pos);
-
-  override function doMakePos(from:Int, to:Int):Pos 
-    return 
-      haxe.macro.Context.makePosition({
-        min: from, max: to, file: fileName
-      });
 
   public function parseFile() {
     var ret:Array<FileRef> = [];
