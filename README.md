@@ -2,6 +2,8 @@
 
 # Lessie - builds your less stylesheets for you
 
+⚠️ - *this project has been deprecated in favor of [cix](https://github.com/back2dos/cix). Feel free to fork and ping me for ownership on haxelib.*
+
 Lessie is a helper for making it easier to build less files.
 
 The basic idea is to allow adding `@:less("<filePath>")` to any class and have Lessie deal with the rest. Lessie will then find all these occurence, discard those eliminated by DCE, and finally generate output. 
